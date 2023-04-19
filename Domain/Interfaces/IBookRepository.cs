@@ -9,10 +9,10 @@ namespace Domain.Interfaces
 {
     public interface IBookRepository
     {
-        Task<IEnumerable<Book>> GetAllBooksAsync();
-        Task<Book> GetBookByIdAsync(int id);
-        Task CreateBookAsync(Book book);
-        Task UpdateBookAsync(int id, Book book);
-        Task DeleteBookAsync(int id);
+        Task<Book?> GetByIdAsync(int id);
+        Task<IEnumerable<Book>> GetAllAsync();
+        Task AddAsync(Book book);
+        Task UpdateAsync(Book book);
+        Task DeleteAsync(Book book);
     }
 }
