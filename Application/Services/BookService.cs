@@ -18,12 +18,12 @@ namespace Application.Services
         {
             _bookRepository = bookRepository;
         }
-        public async Task CreateBookAsync(Book book)
+        public async Task<Book> CreateBookAsync(Book book)
         {
             try
             {
                 
-                await _bookRepository.CreateAsync(book);
+               return await _bookRepository.CreateAsync(book);
                
             }
             catch (Exception ex)
@@ -33,7 +33,7 @@ namespace Application.Services
 
         }
 
-        public async Task DeleteBookAsync(Book book)
+        public async Task<Book> DeleteBookAsync(Book book)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace Application.Services
                     throw new Exception($"Book with ID {book.Id} not found");
                 }
 
-                await _bookRepository.DeleteAsync(existingBook);
+               return await _bookRepository.DeleteAsync(existingBook);
             }
             catch (Exception ex)
             {
@@ -82,19 +82,12 @@ namespace Application.Services
             }
         }
 
-        public async Task UpdateBookAsync(Book book)
+        public async Task<Book> UpdateBookAsync(Book book)
         {
             try
             {
-                
 
-                var existingBook = await _bookRepository.GetByIdAsync(book.Id);
-                if (existingBook == null)
-                {
-                    throw new Exception($"Book with ID {book.Id} not found");
-                }
-
-                await _bookRepository.UpdateAsync(book);
+               return await _bookRepository.UpdateAsync(book);
             }
             catch (Exception ex)
             {

@@ -17,16 +17,19 @@ namespace Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-        public async Task CreateAsync(Book book)
+        public  async Task<Book> CreateAsync(Book book)
         {
             try
             {
-                await _dbContext.Set<Book>().AddAsync(book);
+                await _dbContext.Book.AddAsync(book);
                 await _dbContext.SaveChangesAsync();
+
+
+                return book;
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occurred while creating the book in the database.", ex);
+                throw new Exception("Error creating book.", ex);
             }
 
         }
@@ -57,12 +60,14 @@ namespace Infrastructure.Repositories
 
 
 
-        public async Task UpdateAsync(Book book)
+        public async Task<Book> UpdateAsync(Book book)
         {
             try
             {
+                
                 _dbContext.Entry(book).State = EntityState.Modified;
                 await _dbContext.SaveChangesAsync();
+                return book;
             }
             catch (Exception ex)
             {
@@ -70,12 +75,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public async Task DeleteAsync(Book book)
+        public async Task<Book> DeleteAsync(Book book)
         {
             try
             {
                 _dbContext.Set<Book>().Remove(book);
                 await _dbContext.SaveChangesAsync();
+                return book;
             }
             catch (Exception ex)
             {

@@ -11,8 +11,8 @@ namespace Application.IServices
     {
         Task<IEnumerable<Book>> GetBooksAsync();
         Task<Book> GetBookAsync(int id);
-        Task CreateBookAsync(Book book);
-        Task UpdateBookAsync(Book book);
-        Task DeleteBookAsync(Book book);
+        Task<Book> CreateBookAsync(Book book);
+        Task<Book> UpdateBookAsync(Book book);
+        Task<Book> DeleteBookAsync(Book book);
     }
 }
