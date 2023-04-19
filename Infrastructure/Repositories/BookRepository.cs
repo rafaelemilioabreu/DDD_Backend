@@ -1,5 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.Interfaces;
+using Domain.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,39 +17,70 @@ namespace Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-        public Task CreateBookAsync(Book book)
+        public async Task CreateAsync(Book book)
         {
-             _dbContext.Books.AddAsync(book);
-             return _dbContext.SaveChangesAsync();
-            
+            try
+            {
+                await _dbContext.Set<Book>().AddAsync(book);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while creating the book in the database.", ex);
+            }
+
         }
 
         public async Task<Book?> GetByIdAsync(int id)
         {
-            return await _dbContext.Books.FindAsync(id);
+            try
+            {
+                return await _dbContext.Set<Book>().FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the book from the database.", ex);
+            }
         }
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _dbContext.Books.ToListAsync();
+            try
+            {
+                return await _dbContext.Set<Book>().ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while getting the books from the database.", ex);
+            }
         }
 
-        public async Task AddAsync(Book book)
-        {
-            await _dbContext.Books.AddAsync(book);
-            await _dbContext.SaveChangesAsync();
-        }
+
 
         public async Task UpdateAsync(Book book)
         {
-            _dbContext.Entry(book).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Entry(book).State = EntityState.Modified;
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while updating the book in the database.", ex);
+            }
         }
 
         public async Task DeleteAsync(Book book)
         {
-            _dbContext.Books.Remove(book);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Set<Book>().Remove(book);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while deleting the book from the database.", ex);
+            }
         }
     }
 }
