@@ -1,6 +1,7 @@
 ﻿using Application.IServices;
 using Domain.Entities;
 using Domain.IRepositories;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +14,25 @@ namespace Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IValidator<Book> _bookValidator;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(IBookRepository bookRepository, IValidator<Book> bookValidator)
         {
             _bookRepository = bookRepository;
+            _bookValidator = bookValidator;
         }
         public async Task<Book> CreateBookAsync(Book book)
         {
             try
             {
-                
-               return await _bookRepository.CreateAsync(book);
+                var validationResult = await _bookValidator.ValidateAsync(book);
+
+                if (!validationResult.IsValid)
+                {
+                    throw new ValidationException(validationResult.Errors);
+                }
+
+                return await _bookRepository.CreateAsync(book);
                
             }
             catch (Exception ex)
@@ -37,6 +46,7 @@ namespace Application.Services
         {
             try
             {
+
                 var existingBook = await _bookRepository.GetByIdAsync(book.Id);
                 if (existingBook == null)
                 {
@@ -86,8 +96,14 @@ namespace Application.Services
         {
             try
             {
+                var validationResult = await _bookValidator.ValidateAsync(book);
 
-               return await _bookRepository.UpdateAsync(book);
+                if (!validationResult.IsValid)
+                {
+                    throw new ValidationException(validationResult.Errors);
+                }
+
+                return await _bookRepository.UpdateAsync(book);
             }
             catch (Exception ex)
             {
