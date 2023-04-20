@@ -22,6 +22,14 @@ builder.Services.AddDbContext<MainDbContext>(options =>
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IValidator<Book>, BookValidator>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "Policy",
+                      policy =>
+                      {
+                          policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                      });
+});
 
 
 var app = builder.Build();
@@ -35,6 +43,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("Policy");
+
 
 app.UseAuthorization();
 
