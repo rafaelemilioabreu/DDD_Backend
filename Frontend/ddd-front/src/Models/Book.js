@@ -4,7 +4,7 @@ class Book {
     this.title = title;
     this.author = author;
     this.publisher = publisher;
-    this.year = year;
+    this.year = year.slice(0,4);
   }
 }
 

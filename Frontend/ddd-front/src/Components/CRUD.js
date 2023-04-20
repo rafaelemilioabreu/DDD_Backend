@@ -14,51 +14,62 @@ import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import BookService from "../Service/BookService";
+import InfoIcon from '@mui/icons-material/Info';
 
 function CRUD() {
 
     
-
+    const bookService = new BookService();
     useEffect(() => {
-        const bookService = new BookService();
+        
         bookService.getBooks().then(data => setBooks(data));
 
     }, []);
 
 
     const [books, setBooks] = useState([]);
+ 
   
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [consultDialog, setConsultDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  
 
   const handleOpenDialog = (item) => {
     setOpenDialog(true);
     setSelectedItem(item);
-    if (item) {
-      setName(item.name);
-      setDescription(item.description);
-    }
+   
   };
+
+  const handleOpenConsultDialog = (item) => {
+    setConsultDialog(true);
+    setSelectedItem(item);
+   
+    };
+
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedItem(null);
-    setName("");
-    setDescription("");
+   
   };
+
+    const handleCloseConsultDialog = () => {
+    setConsultDialog(false);
+    setSelectedItem(null);
+
+    };
 
   const handleSaveItem = () => {
     if (selectedItem) {
       const updatedItems = books.map((item) =>
-        item.id === selectedItem.id ? { ...item, name, description } : item
+        item.id === selectedItem.id ? { ...item, selectedItem } : item
       );
       setBooks(updatedItems);
     } else {
       const newId = Math.max(...books.map((item) => item.id)) + 1;
-      const newItem = { id: newId, name, description };
+      const newItem = { id: newId, selectedItem };
       setBooks([...books, newItem]);
     }
     handleCloseDialog();
@@ -82,21 +93,20 @@ function CRUD() {
 
       <Table>
         <TableHead>
-          <TableCell>ID</TableCell>
+      
           <TableCell>Title</TableCell>
-          <TableCell>Author</TableCell>
+         
           <TableCell>Publisher</TableCell>
-            <TableCell>Year</TableCell>
+            <TableCell>Actions</TableCell>
         </TableHead>
         <TableBody>
           {books.map((book) => (
             <TableRow key={book.id}>
-              <TableCell>{book.id}</TableCell>
+              
                 <TableCell>{book.title}</TableCell>
-                <TableCell>{book.author}</TableCell>
+               
                 <TableCell>{book.publisher}</TableCell>
                 
-                <TableCell>{book.year.slice(0,4)}</TableCell>
               
               <TableCell>
                 <Button
@@ -115,36 +125,93 @@ function CRUD() {
                 >
                   Delete book
                 </Button>
+                
+                <Button
+                    onClick={() => handleOpenConsultDialog(book)}
+                    variant="contained"
+                    color="info"
+                    startIcon={<InfoIcon />}
+                >
+                    Consult book
+                </Button>
               </TableCell>
             </TableRow>
           ))}
+
+          {/* Create/Update dialog */}
           <Dialog open={openDialog} onClose={handleCloseDialog}>
             <DialogTitle>{selectedItem ? "Edit Item" : "Add Item"}</DialogTitle>
             <DialogContent>
               <TextField
                 label="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={selectedItem ? selectedItem.name : ""}
+                onChange={(e) => setSelectedItem({ ...selectedItem, name: e.target.value })}
                 fullWidth
                 margin="normal"
               />
               <TextField
                 label="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={selectedItem ? selectedItem.description : ""}
+                onChange={(e) => setSelectedItem({ ...selectedItem, description: e.target.value })}
                 fullWidth
                 margin="normal"
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseDialog} color="secondary">
+              <Button onClick={handleCloseDialog} color="error">
                 Cancel
               </Button>
-              <Button onClick={handleSaveItem} color="primary">
+              <Button onClick={handleSaveItem} color="secondary">
                 Save
               </Button>
             </DialogActions>
           </Dialog>
+          {/* Consult dialog */}
+            <Dialog open={consultDialog} onClose={handleCloseConsultDialog}>
+                <DialogTitle>Consult Item</DialogTitle>
+                <DialogContent>
+                    <TextField
+
+                        label="Id"
+                        value={selectedItem ? selectedItem.id : ""}
+                        fullWidth
+                        margin="normal"
+                        disabled={true}
+                    />
+                    <TextField
+                        label="Title"
+                        value={selectedItem ? selectedItem.title : ""}
+                        fullWidth
+                        margin="normal"
+                        disabled={true}
+                    />
+                    <TextField
+                        label="Author"
+                        value={selectedItem ? selectedItem.author : ""}
+                        fullWidth
+                        margin="normal"
+                        disabled={true}
+                    />
+                    <TextField
+                        label="Publisher"
+                        value={selectedItem ? selectedItem.publisher : ""}
+                        fullWidth
+                        margin="normal"
+                        disabled={true}
+                    />
+                    <TextField
+                        label="Year"
+                        value={selectedItem ? selectedItem.year : ""}
+                        fullWidth
+                        margin="normal"
+                        disabled={true}
+                    />
+                   
+                </DialogContent>
+                </Dialog>
+                
+
+
         </TableBody>
       </Table>
     </>
