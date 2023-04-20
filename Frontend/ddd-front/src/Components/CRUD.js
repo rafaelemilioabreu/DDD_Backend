@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import Table from "@mui/material/Table";
@@ -13,13 +13,21 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
+import BookService from "../Service/BookService";
 
 function CRUD() {
-  const [items, setItems] = useState([
-    { id: 1, name: "Item 1", description: "Description 1" },
-    { id: 2, name: "Item 2", description: "Description 2" },
-    { id: 3, name: "Item 3", description: "Description 3" },
-  ]);
+
+    
+
+    useEffect(() => {
+        const bookService = new BookService();
+        bookService.getBooks().then(data => setBooks(data));
+
+    }, []);
+
+
+    const [books, setBooks] = useState([]);
+  
 
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -44,21 +52,21 @@ function CRUD() {
 
   const handleSaveItem = () => {
     if (selectedItem) {
-      const updatedItems = items.map((item) =>
+      const updatedItems = books.map((item) =>
         item.id === selectedItem.id ? { ...item, name, description } : item
       );
-      setItems(updatedItems);
+      setBooks(updatedItems);
     } else {
-      const newId = Math.max(...items.map((item) => item.id)) + 1;
+      const newId = Math.max(...books.map((item) => item.id)) + 1;
       const newItem = { id: newId, name, description };
-      setItems([...items, newItem]);
+      setBooks([...books, newItem]);
     }
     handleCloseDialog();
   };
 
   const handleDeleteItem = (item) => {
-    const updatedItems = items.filter((i) => i.id !== item.id);
-    setItems(updatedItems);
+    const updatedItems = books.filter((i) => i.id !== item.id);
+    setBooks(updatedItems);
   };
 
   return (
@@ -75,32 +83,37 @@ function CRUD() {
       <Table>
         <TableHead>
           <TableCell>ID</TableCell>
-          <TableCell>Name</TableCell>
-          <TableCell>Description</TableCell>
-          <TableCell>Actions</TableCell>
+          <TableCell>Title</TableCell>
+          <TableCell>Author</TableCell>
+          <TableCell>Publisher</TableCell>
+            <TableCell>Year</TableCell>
         </TableHead>
         <TableBody>
-          {items.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.id}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.description}</TableCell>
+          {books.map((book) => (
+            <TableRow key={book.id}>
+              <TableCell>{book.id}</TableCell>
+                <TableCell>{book.title}</TableCell>
+                <TableCell>{book.author}</TableCell>
+                <TableCell>{book.publisher}</TableCell>
+                
+                <TableCell>{book.year.slice(0,4)}</TableCell>
+              
               <TableCell>
                 <Button
-                  onClick={() => handleOpenDialog(item)}
+                  onClick={() => handleOpenDialog(book)}
                   variant="contained"
                   color="secondary"
                   startIcon={<EditIcon />}
                 >
-                  Edit Item
+                  Edit book
                 </Button>
                 <Button
-                  onClick={() => handleDeleteItem(item)}
+                  onClick={() => handleDeleteItem(book)}
                   variant="contained"
                   color="error"
                   startIcon={<DeleteIcon />}
                 >
-                  Delete Item
+                  Delete book
                 </Button>
               </TableCell>
             </TableRow>
