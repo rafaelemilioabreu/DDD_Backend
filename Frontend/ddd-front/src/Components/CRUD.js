@@ -81,8 +81,10 @@ function CRUD() {
   };
 
   const handleDeleteItem = (item) => {
-    const updatedItems = books.filter((i) => i.id !== item.id);
-    setBooks(updatedItems);
+    bookService.deleteBook(item).then((data) => {
+      selectedItem(data);
+      getData();
+    });
   };
 
   return (
