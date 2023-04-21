@@ -15,24 +15,52 @@ import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import BookService from "../Service/BookService";
 import InfoIcon from "@mui/icons-material/Info";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 function CRUD() {
-    const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState([]);
   const bookService = new BookService();
   const getData = () => {
     bookService.getBooks().then((data) => setBooks(data));
-    };
+  };
   useEffect(() => {
     getData();
   }, [books]);
 
-  
-    
+  const [formErrors, setFormErrors] = useState({});
 
-  
+  const validateForm = () => {
+    let errors = {};
+    let isValid = true;
+
+    if (!selectedItem.title) {
+      errors.title = "Title is required";
+      isValid = false;
+    }
+
+    if (!selectedItem.publisher) {
+      errors.publisher = "Publisher is required";
+      isValid = false;
+    }
+
+    if (!selectedItem.author) {
+      errors.author = "Author is required";
+      isValid = false;
+    }
+
+    
+    if (!selectedItem.year || isNaN(Date.parse(selectedItem.year)) !== false) {
+      errors.year = "Year is required";
+      isValid = false;
+      
+    }
+
+    setFormErrors(errors);
+
+    return isValid;
+  };
 
   const [openDialog, setOpenDialog] = useState(false);
   const [consultDialog, setConsultDialog] = useState(false);
@@ -41,7 +69,7 @@ function CRUD() {
     title: "",
     author: "",
     publisher: "",
-    year: new Date(),
+    year: null,
   });
 
   const handleOpenDialog = (item) => {
@@ -56,28 +84,43 @@ function CRUD() {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setSelectedItem(null);
+    setSelectedItem({
+      id: 0,
+      title: "",
+      author: "",
+      publisher: "",
+      year: null,
+    });
   };
 
   const handleCloseConsultDialog = () => {
     setConsultDialog(false);
-    setSelectedItem(null)
+    setSelectedItem({
+      id: 0,
+      title: "",
+      author: "",
+      publisher: "",
+      year: null,
+    });
   };
 
   const handleSaveItem = () => {
-    if (selectedItem.id > 0 && selectedItem.id !== undefined) {
-      bookService.updateBook(selectedItem).then((data) => {
-        selectedItem(data);
-        getData();
-        
-      });
-    } else {
-      bookService.addBook(selectedItem).then((data) => {
-        selectedItem(data);
-        getData();
-      });
+    if (validateForm()) {
+      console.log("Form is invalid");
+      if (selectedItem.id > 0 && selectedItem.id !== undefined) {
+        bookService.updateBook(selectedItem).then((data) => {
+          selectedItem(data);
+          getData();
+        });
+      } else {
+        bookService.addBook(selectedItem).then((data) => {
+          selectedItem(data);
+          getData();
+        });
+      }
+
+      handleCloseDialog();
     }
-    handleCloseDialog();
   };
 
   const handleDeleteItem = (item) => {
@@ -157,6 +200,8 @@ function CRUD() {
                   }}
                   fullWidth
                   margin="normal"
+                  error={formErrors.title ? true : false}
+                  helperText={formErrors.title}
                 />
 
                 <TextField
@@ -170,6 +215,8 @@ function CRUD() {
                   }
                   fullWidth
                   margin="normal"
+                  error={formErrors.publisher ? true : false}
+                  helperText={formErrors.publisher}
                 />
 
                 <TextField
@@ -180,19 +227,28 @@ function CRUD() {
                   }
                   fullWidth
                   margin="normal"
+                  error={formErrors.author ? true : false}
+                  helperText={formErrors.author}
                 />
 
-                <DateTimePicker
-                  label="Year"
+                <DatePicker
                   value={
                     selectedItem && selectedItem.year
                       ? new Date(selectedItem.year)
-                      : ""
+                      : null
                   }
                   onChange={(date) => {
                     setSelectedItem({ ...selectedItem, year: date });
                   }}
-                  renderInput={(params) => <TextField {...params} />}
+                  onError={(newError) =>
+                    setFormErrors({ ...formErrors, year: newError })
+                  }
+                  slotProps={{
+                    textField: {
+                      helperText: formErrors.year,
+                      error: formErrors.year ? true : false,
+                    },
+                  }}
                 />
               </DialogContent>
               <DialogActions>
@@ -236,14 +292,13 @@ function CRUD() {
                   margin="normal"
                   disabled={true}
                 />
-                <DateTimePicker
-                  label="Year"
+
+                <DatePicker
                   value={
                     selectedItem && selectedItem.year
                       ? new Date(selectedItem.year)
-                      : ""
+                      : null
                   }
-                  renderInput={(params) => <TextField {...params} />}
                   disabled={true}
                 />
               </DialogContent>
