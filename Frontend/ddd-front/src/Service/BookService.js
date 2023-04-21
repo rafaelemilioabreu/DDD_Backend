@@ -33,7 +33,7 @@ class BookService {
       body: JSON.stringify(book),
     })
       .then((response) => response.json())
-      .then((data) => data);
+      .then((data) => console.log(data));
   }
 
   updateBook(book) {
