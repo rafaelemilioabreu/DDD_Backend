@@ -1,0 +1,12 @@
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+# Set environment variables
+ENV ACCEPT_EULA=Y
+ENV SA_PASSWORD=Tryhard123
+ENV MSSQL_PID=Developer
+
+# Copy the db.sql script to the container
+COPY db.sql /tmp/
+
+# Start SQL Server and run the script
+CMD /opt/mssql/bin/sqlservr & sleep 30s && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Tryhard123" -i /tmp/db.sql & sleep infinity

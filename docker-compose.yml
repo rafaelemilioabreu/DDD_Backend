@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    ports:
+      - 5001:80
+    depends_on:
+      - db
+
+
+  ui:
+    container_name: ui
+    image: iu
+    build: 
+      context: ./Frontend/ddd-front
+      dockerfile: DockerFile_UI
+    ports: 
+      - 3000:3000
+    depends_on:
+      - api
+  db:
+      image: db
+      container_name: database_container
+      build: 
+        context: ./db
+        dockerfile: DockerFile_DB
+      ports:
+        - 1402:1433
+      
+    
+        
+
+      
+
+    
+    

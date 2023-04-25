@@ -21,13 +21,20 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 function CRUD() {
   const [books, setBooks] = useState([]);
+  const [selectedItem, setSelectedItem] = useState({
+    id: 0,
+    title: "",
+    author: "",
+    publisher: "",
+    year: null,
+  });
   const bookService = new BookService();
   const getData = () => {
     bookService.getBooks().then((data) => setBooks(data));
   };
   useEffect(() => {
     getData();
-  }, [books]);
+  }, []);
 
   const [formErrors, setFormErrors] = useState({});
 
@@ -64,13 +71,7 @@ function CRUD() {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [consultDialog, setConsultDialog] = useState(false);
-  const [selectedItem, setSelectedItem] = useState({
-    id: 0,
-    title: "",
-    author: "",
-    publisher: "",
-    year: null,
-  });
+  
 
   const handleOpenDialog = (item) => {
     setOpenDialog(true);
@@ -106,15 +107,14 @@ function CRUD() {
 
   const handleSaveItem = () => {
     if (validateForm()) {
-      console.log("Form is invalid");
       if (selectedItem.id > 0 && selectedItem.id !== undefined) {
         bookService.updateBook(selectedItem).then((data) => {
-          selectedItem(data);
+          setSelectedItem(data);
           getData();
         });
       } else {
         bookService.addBook(selectedItem).then((data) => {
-          selectedItem(data);
+          setSelectedItem(data);
           getData();
         });
       }
@@ -125,7 +125,7 @@ function CRUD() {
 
   const handleDeleteItem = (item) => {
     bookService.deleteBook(item).then((data) => {
-      selectedItem(data);
+      setSelectedItem(data);
       getData();
     });
   };

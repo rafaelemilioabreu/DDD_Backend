@@ -2,7 +2,7 @@ import Book from "../Models/Book";
 
 class BookService {
   getBooks() {
-    return fetch("https://localhost:44309/api/Book")
+    return fetch("http://localhost:5001/api/Book")
       .then((response) => response.json())
       .then((data) =>
         data.map(
@@ -19,13 +19,13 @@ class BookService {
   }
 
   getBookById(id) {
-    return fetch(`https://localhost:44309/api/Book/${id}`)
+    return fetch(`http://localhost:5001/api/Book/${id}`)
       .then((response) => response.json())
       .then((data) => data);
   }
 
   addBook(book) {
-    return fetch("https://localhost:44309/api/Book", {
+    return fetch("http://localhost:5001/api/Book", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +37,7 @@ class BookService {
   }
 
   updateBook(book) {
-    return fetch(`https://localhost:44309/api/Book/${book.id}`, {
+    return fetch(`http://localhost:5001/api/Book/${book.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -49,7 +49,7 @@ class BookService {
   }
 
   deleteBook(book) {
-    return fetch(`https://localhost:44309/api/Book/${book.id}`, {
+    return fetch(`http://localhost:5001/api/Book/${book.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
